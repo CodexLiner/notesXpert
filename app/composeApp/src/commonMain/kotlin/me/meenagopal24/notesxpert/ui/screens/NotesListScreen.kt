@@ -51,10 +51,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+import me.meenagopal24.notesxpert.ui.asHtml
 import me.meenagopal24.notesxpert.ui.components.NotesSearchBar
 import me.meenagopal24.notesxpert.ui.getRandomColor
 import me.meenagopal24.notesxpert.ui.showable
@@ -336,9 +338,10 @@ private fun NoteCard(
             Text(note.title, style = MaterialTheme.typography.titleMedium, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                note.body,
+                note.body.asHtml(),
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 3,
+                maxLines = 20,
+                overflow = TextOverflow.Ellipsis,
                 color = Color.Black.copy(alpha = 0.8f)
             )
             Box(modifier = Modifier.fillMaxWidth()) {

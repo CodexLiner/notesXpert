@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import androidx.compose.ui.text.AnnotatedString
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
@@ -20,6 +21,8 @@ fun Modifier.swipeToDelete(onDismissed: () -> Unit) = composed {
         }
     }
 }
+
+expect fun String.asHtml() : AnnotatedString
 
 
 fun getRandomColor() = Color(
