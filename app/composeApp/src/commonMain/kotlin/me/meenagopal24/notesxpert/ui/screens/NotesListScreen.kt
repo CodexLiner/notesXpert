@@ -79,7 +79,7 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
+            contentPadding = PaddingValues(start = 16.dp , end = 16.dp , bottom = 200.dp)
         ) {
             item {
                 NotesHeader(

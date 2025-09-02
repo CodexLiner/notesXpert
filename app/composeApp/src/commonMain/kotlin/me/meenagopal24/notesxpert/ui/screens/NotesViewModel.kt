@@ -10,38 +10,42 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 class NotesViewModel {
+
     private val _notes = mutableStateListOf<Note>()
-    val notes: List<Note> get() = _notes
+    val notes: List<Note> get() = _notes.toList()
 
     var searchQuery by mutableStateOf("")
         private set
 
-
     val filteredNotes: List<Note>
         get() = if (searchQuery.isBlank()) _notes
-        else _notes.filter {
-            it.title.contains(searchQuery, ignoreCase = true) || it.body.contains(searchQuery, ignoreCase = true)
+        else _notes.filter { note ->
+            note.title.contains(searchQuery, ignoreCase = true) ||
+                    note.body.contains(searchQuery, ignoreCase = true)
         }
 
     fun loadNotes() {
-        _notes.addAll(NotesXpert.getNotesUseCase.invoke())
+        _notes.clear()
+        _notes.addAll(NotesXpert.getNotesUseCase())
     }
 
     @OptIn(ExperimentalTime::class)
     fun addNote(title: String, body: String) {
+        val id = (_notes.maxOfOrNull { it.id } ?: 0) + 1
         val newNote = Note(
-            id = (_notes.maxOfOrNull { it.id } ?: 0) + 1,
+            id = id,
             title = title,
             body = body,
-            createdAt = Clock.System.now().nanosecondsOfSecond
+            createdAt = Clock.System.now().toEpochMilliseconds()
         )
         _notes.add(0, newNote)
+        NotesXpert.addNoteUseCase(newNote)
     }
 
     fun deleteNote(note: Note) {
-        _notes.remove(note)
-        NotesXpert.deleteNoteUseCase(note.id)
-
+        if (_notes.remove(note)) {
+            NotesXpert.deleteNoteUseCase(note.id)
+        }
     }
 
     fun updateSearchQuery(query: String) {

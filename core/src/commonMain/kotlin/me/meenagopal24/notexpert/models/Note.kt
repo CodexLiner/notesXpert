@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Note(
-    val id: Long = 0, val title: String, val body: String, val createdAt: Int,
+    val id: Long = 0, val title: String, val body: String, val createdAt: Long,
 )
