@@ -36,6 +36,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.sqlDelight.driver.android)
+            implementation(libs.androidx.startup.runtime)
         }
 
         iosMain.dependencies {
@@ -64,45 +65,11 @@ android {
     }
 }
 
-//Publishing your Kotlin Multiplatform library to Maven Central
-//https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html
-mavenPublishing {
-    publishToMavenCentral()
-    coordinates("me.meenagopal24.notexpert", "shared", "1.0.0")
-
-    pom {
-        name = "NotesXpert"
-        description = "Kotlin Multiplatform library"
-        url = "github url" //todo
-
-        licenses {
-            license {
-                name = "MIT"
-                url = "https://opensource.org/licenses/MIT"
-            }
-        }
-
-        developers {
-            developer {
-                id = "" //todo
-                name = "" //todo
-                email = "" //todo
-            }
-        }
-
-        scm {
-            url = "github url" //todo
-        }
-    }
-    if (project.hasProperty("signing.keyId")) signAllPublications()
-}
-
 sqldelight {
     databases {
-        create("MyDatabase") {
-            // Database configuration here.
-            // https://cashapp.github.io/sqldelight
+        create("LocalNotesDatabase") {
             packageName.set("me.meenagopal24.notexpert.db")
+            srcDirs("src/commonMain/kotlin/sqldelight")
         }
     }
 }
