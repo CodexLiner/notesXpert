@@ -79,9 +79,7 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     var showBottomSheet by remember { mutableStateOf(false) }
-    var newTitle by remember { mutableStateOf("") }
     var editingNote by remember { mutableStateOf<Note?>(null) }
-    var newBody by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) { viewModel.loadNotes() }
 
@@ -115,8 +113,6 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
                         },
                         onEdit = {
                             editingNote = note
-                            newTitle = note.title
-                            newBody = note.body
                             showBottomSheet = true
                         }
                     )
@@ -138,12 +134,7 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
             AddNoteBottomSheet(
                 note = editingNote,
                 onSave = { note ->
-                    editingNote?.let { viewModel.updateNote(it) } ?: viewModel.addNote(
-                        newTitle,
-                        newBody
-                    )
-                    newTitle = ""
-                    newBody = ""
+                    editingNote?.let { viewModel.updateNote(it) } ?: viewModel.addNote(note)
                     editingNote = null
                     showBottomSheet = false
                 }, onDismiss = {

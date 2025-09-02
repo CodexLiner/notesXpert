@@ -30,16 +30,9 @@ class NotesViewModel {
     }
 
     @OptIn(ExperimentalTime::class)
-    fun addNote(title: String, body: String) {
-        val id = (_notes.maxOfOrNull { it.id } ?: 0) + 1
-        val newNote = Note(
-            id = id,
-            title = title,
-            body = body,
-            createdAt = Clock.System.now().toEpochMilliseconds()
-        )
-        _notes.add(0, newNote)
-        NotesXpert.addNoteUseCase(newNote)
+    fun addNote(note: Note) {
+        _notes.add(0, note)
+        NotesXpert.addNoteUseCase(note)
     }
 
     fun deleteNote(note: Note) {
