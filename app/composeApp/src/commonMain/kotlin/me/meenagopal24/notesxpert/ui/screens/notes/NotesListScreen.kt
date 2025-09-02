@@ -43,6 +43,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,7 +79,51 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() } , onNoteClick: (String) -> Unit) {
-    val notes = viewModel.filteredNotes
+    val notes by viewModel.notes.collectAsState()
+
+    when (notes.size) {
+        0 ->  DummyNotesScreen(viewModel)
+        else -> NotesMainContent(notes, viewModel, onNoteClick)
+    }
+    LaunchedEffect(Unit) {
+        viewModel.loadNotes()
+    }
+}
+
+@Composable
+fun DummyNotesScreen(viewModel: NotesViewModel) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            "No notes found",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.align(Alignment.Center)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.background
+            ),
+            border = ButtonDefaults.outlinedButtonBorder.copy(
+                brush = SolidColor(MaterialTheme.colorScheme.primary)
+            ),
+            onClick = {
+                viewModel.addDummyNotes()
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+                .navigationBarsPadding(),
+            shape = RoundedCornerShape(12.dp),
+        ) {
+            Text("Add Dummy Notes")
+        }
+    }
+}
+
+@Composable
+fun NotesMainContent(notes: List<Note>, viewModel: NotesViewModel, onNoteClick: (String) -> Unit) {
     val searchQuery = viewModel.searchQuery
     val coroutineScope = rememberCoroutineScope()
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
@@ -98,7 +143,7 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() } , 
             item {
                 NotesHeader(
                     statusBarHeight = statusBarHeight,
-                    searchQuery = searchQuery,
+                    searchQuery = searchQuery.value,
                     onQueryChange = viewModel::updateSearchQuery
                 )
             }
@@ -336,7 +381,7 @@ private fun NoteCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .swipeToDelete(onDelete).clickable { onCardClick() },
+            .swipeToDelete(onDelete).clickable(indication = null , interactionSource = null , onClick = onCardClick),
         colors = CardDefaults.cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium

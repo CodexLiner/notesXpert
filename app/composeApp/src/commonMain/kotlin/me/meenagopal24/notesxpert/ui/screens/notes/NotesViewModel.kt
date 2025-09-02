@@ -1,50 +1,74 @@
 package me.meenagopal24.notesxpert.ui.screens.notes
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import me.meenagopal24.notexpert.NotesXpert
 import me.meenagopal24.notexpert.models.Note
 import kotlin.time.ExperimentalTime
 
 class NotesViewModel {
 
-    private val _notes = mutableStateListOf<Note>()
-    val notes: List<Note> get() = _notes.toList()
+    private val viewModelScope = CoroutineScope(Dispatchers.Main)
 
-    var searchQuery by mutableStateOf("")
-        private set
+    private val _notes = MutableStateFlow<List<Note>>(emptyList())
+    val notes: StateFlow<List<Note>> get() = _notes.asStateFlow()
 
-    val filteredNotes: List<Note>
-        get() = if (searchQuery.isBlank()) _notes
-        else _notes.filter { note ->
-            note.title.contains(searchQuery, ignoreCase = true) ||
-                    note.body.contains(searchQuery, ignoreCase = true)
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> get() = _searchQuery
+
+    val filteredNotes = _notes.combine(_searchQuery) { notes, query ->
+        if (query.isBlank()) notes
+        else notes.filter { note ->
+            note.title.contains(query, ignoreCase = true) ||
+                    note.body.contains(query, ignoreCase = true)
         }
+    }
 
     fun loadNotes() {
-        _notes.clear()
-        _notes.addAll(NotesXpert.getNotesUseCase())
+        viewModelScope.launch {
+            _notes.value = NotesXpert.getNotesUseCase()
+        }
     }
 
     @OptIn(ExperimentalTime::class)
     fun addNote(note: Note) {
-        _notes.add(0, note)
-        NotesXpert.addNoteUseCase(note)
+        viewModelScope.launch {
+            _notes.update { currentNotes -> listOf(note) + currentNotes }
+            NotesXpert.addNoteUseCase(note)
+        }
     }
 
     fun deleteNote(note: Note) {
-        if (_notes.remove(note)) {
+        viewModelScope.launch {
+            _notes.update { currentNotes -> currentNotes.filter { it.id != note.id } }
             NotesXpert.deleteNoteUseCase(note.id)
         }
     }
 
     fun updateSearchQuery(query: String) {
-        searchQuery = query
+        _searchQuery.value = query
     }
 
     fun updateNote(note: Note) {
+        viewModelScope.launch {
+            _notes.update { currentNotes ->
+                currentNotes.map { if (it.id == note.id) note else it }
+            }
+        }
+    }
 
+    fun addDummyNotes() {
+        viewModelScope.launch {
+            me.meenagopal24.notesxpert.dummy.notes.forEach {
+                NotesXpert.addNoteUseCase(it)
+            }
+            loadNotes()
+        }
     }
 }
