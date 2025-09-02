@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import me.meenagopal24.notesxpert.ui.asHtml
 import me.meenagopal24.notesxpert.ui.asLocalDateTime
+import me.meenagopal24.notesxpert.ui.components.HtmlContent
 import me.meenagopal24.notesxpert.ui.components.NotesSearchBar
 import me.meenagopal24.notesxpert.ui.getRandomColor
 import me.meenagopal24.notesxpert.ui.showable
