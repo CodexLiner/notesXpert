@@ -79,7 +79,7 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp , end = 16.dp , bottom = 200.dp)
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 200.dp)
         ) {
             item {
                 NotesHeader(
@@ -93,19 +93,15 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
                 var dismissed by remember { mutableStateOf(false) }
                 val noteColor = remember { getRandomColor() }
 
-                AnimatedVisibility(
-                    visible = !dismissed,
-                    enter = expandVertically(animationSpec = tween(300)) + fadeIn(),
-                    exit = shrinkVertically(animationSpec = tween(300)) + fadeOut()
-                ) {
+                if (!dismissed) {
                     NoteCard(
+                        modifier = Modifier.animateItem(),
                         note = note,
                         color = noteColor,
                         onDelete = {
                             dismissed = true
                             coroutineScope.launch { viewModel.deleteNote(note) }
-                        },
-                        onClick = { /* handle select note */ }
+                        }
                     )
                 }
             }
@@ -118,10 +114,7 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
                 .padding(16.dp)
                 .navigationBarsPadding()
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_plus),
-                contentDescription = "Add Note"
-            )
+            Icon(painter = painterResource(Res.drawable.ic_plus), contentDescription = "Add Note")
         }
 
         if (showBottomSheet) {
@@ -172,29 +165,13 @@ private fun AddNoteBottomSheet(
                 .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Add New Note",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Text("Add New Note", style = MaterialTheme.typography.headlineSmall)
 
-            NoteInputField(
-                value = newTitle,
-                onValueChange = onTitleChange,
-                placeholder = "Title",
-                isError = showTitleError,
-                height = 56.dp
-            ) {
+            NoteInputField(newTitle, onTitleChange, "Title", showTitleError, 56.dp) {
                 showTitleError = false
             }
 
-            NoteInputField(
-                value = newBody,
-                onValueChange = onBodyChange,
-                placeholder = "Body",
-                isError = showBodyError,
-                height = 180.dp
-            ) {
+            NoteInputField(newBody, onBodyChange, "Body", showBodyError, 180.dp) {
                 showBodyError = false
             }
 
@@ -204,26 +181,15 @@ private fun AddNoteBottomSheet(
                     val bodyValid = newBody.isNotBlank()
                     showTitleError = !titleValid
                     showBodyError = !bodyValid
-
-                    if (titleValid && bodyValid) {
-                        onSave()
-                        onDismiss()
-                    }
+                    if (titleValid && bodyValid) onSave()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.onBackground,
                     contentColor = MaterialTheme.colorScheme.background
                 )
-            ) {
-                Text(
-                    "Save",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+            ) { Text("Save", style = MaterialTheme.typography.titleMedium) }
         }
     }
 }
@@ -235,7 +201,7 @@ private fun NoteInputField(
     placeholder: String,
     isError: Boolean,
     height: Dp,
-    onValid: () -> Unit
+    onValid: () -> Unit,
 ) {
     Column {
         TextField(
@@ -260,19 +226,15 @@ private fun NoteInputField(
                 focusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(height),
+            modifier = Modifier.fillMaxWidth().height(height),
             isError = isError
         )
-        if (isError) {
-            Text(
-                text = "$placeholder is required",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 8.dp, top = 4.dp)
-            )
-        }
+        if (isError) Text(
+            "$placeholder is required",
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+        )
     }
 }
 
@@ -282,11 +244,9 @@ private fun NotesHeader(
     searchQuery: String,
     onQueryChange: (String) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(top = statusBarHeight, bottom = 16.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxWidth().padding(top = statusBarHeight, bottom = 16.dp)) {
         Text(
-            text = "Notes",
+            "Notes",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
@@ -298,33 +258,28 @@ private fun NotesHeader(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NoteCard(
+    modifier: Modifier = Modifier,
     note: Note,
     color: Color,
     onDelete: () -> Unit,
-    onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().swipeToDelete { onDelete() }.clickable { onClick() },
+        modifier = modifier.fillMaxWidth().swipeToDelete(onDelete),
         colors = CardDefaults.cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = note.title, style = MaterialTheme.typography.titleMedium, color = Color.Black
-            )
+            Text(note.title, style = MaterialTheme.typography.titleMedium, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = note.body,
+                note.body,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 3,
                 color = Color.Black.copy(alpha = 0.8f)
             )
-
             Box(modifier = Modifier.fillMaxWidth()) {
-                IconButton(
-                    onClick = onDelete, modifier = Modifier.align(Alignment.BottomEnd)
-                ) {
+                IconButton(onClick = onDelete, modifier = Modifier.align(Alignment.BottomEnd)) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_trash),
                         contentDescription = "Delete Note",
