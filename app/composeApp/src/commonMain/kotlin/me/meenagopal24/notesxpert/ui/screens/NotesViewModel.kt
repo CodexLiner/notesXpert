@@ -51,4 +51,8 @@ class NotesViewModel {
     fun updateSearchQuery(query: String) {
         searchQuery = query
     }
+
+    fun updateNote(note: Note) {
+
+    }
 }

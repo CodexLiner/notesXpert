@@ -1,16 +1,11 @@
 package me.meenagopal24.notesxpert.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -20,7 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -56,6 +53,7 @@ import me.meenagopal24.notesxpert.ui.getRandomColor
 import me.meenagopal24.notesxpert.ui.swipeToDelete
 import me.meenagopal24.notexpert.models.Note
 import notesxpert.app.composeapp.generated.resources.Res
+import notesxpert.app.composeapp.generated.resources.ic_edit
 import notesxpert.app.composeapp.generated.resources.ic_plus
 import notesxpert.app.composeapp.generated.resources.ic_trash
 import org.jetbrains.compose.resources.painterResource
@@ -70,6 +68,7 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
 
     var showBottomSheet by remember { mutableStateOf(false) }
     var newTitle by remember { mutableStateOf("") }
+    var editingNote by remember { mutableStateOf<Note?>(null) }
     var newBody by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) { viewModel.loadNotes() }
@@ -101,6 +100,12 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
                         onDelete = {
                             dismissed = true
                             coroutineScope.launch { viewModel.deleteNote(note) }
+                        },
+                        onEdit = {
+                            editingNote = note
+                            newTitle = note.title
+                            newBody = note.body
+                            showBottomSheet = true
                         }
                     )
                 }
@@ -119,19 +124,25 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
 
         if (showBottomSheet) {
             AddNoteBottomSheet(
+                isEdit = editingNote != null,
                 newTitle = newTitle,
                 onTitleChange = { newTitle = it },
                 newBody = newBody,
-                onBodyChange = { newBody = it },
-                onSave = {
+                onBodyChange = { newBody = it }, onSave = {
                     if (newTitle.isNotBlank() || newBody.isNotBlank()) {
-                        viewModel.addNote(newTitle, newBody)
+                        editingNote?.let {
+                            viewModel.updateNote(it)
+                        } ?: viewModel.addNote(newTitle, newBody)
                         newTitle = ""
                         newBody = ""
+                        editingNote = null
                         showBottomSheet = false
                     }
                 },
-                onDismiss = { showBottomSheet = false }
+                onDismiss = {
+                    showBottomSheet = false
+                    editingNote = null
+                }
             )
         }
     }
@@ -146,6 +157,7 @@ private fun AddNoteBottomSheet(
     onBodyChange: (String) -> Unit,
     onSave: () -> Unit,
     onDismiss: () -> Unit,
+    isEdit: Boolean,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showTitleError by remember { mutableStateOf(false) }
@@ -189,7 +201,9 @@ private fun AddNoteBottomSheet(
                     containerColor = MaterialTheme.colorScheme.onBackground,
                     contentColor = MaterialTheme.colorScheme.background
                 )
-            ) { Text("Save", style = MaterialTheme.typography.titleMedium) }
+            ) {
+                Text(text = if (isEdit) "Update" else "Save", style = MaterialTheme.typography.titleMedium)
+            }
         }
     }
 }
@@ -262,9 +276,12 @@ private fun NoteCard(
     note: Note,
     color: Color,
     onDelete: () -> Unit,
+    onEdit: () -> Unit
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().swipeToDelete(onDelete),
+        modifier = modifier
+            .fillMaxWidth()
+            .swipeToDelete(onDelete),
         colors = CardDefaults.cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium
@@ -279,11 +296,23 @@ private fun NoteCard(
                 color = Color.Black.copy(alpha = 0.8f)
             )
             Box(modifier = Modifier.fillMaxWidth()) {
-                IconButton(onClick = onDelete, modifier = Modifier.align(Alignment.BottomEnd)) {
+                Row(modifier = Modifier.align(Alignment.BottomEnd)) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_edit),
+                        contentDescription = "Edit Note",
+                        tint = Color.Blue,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onEdit() }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         painter = painterResource(Res.drawable.ic_trash),
                         contentDescription = "Delete Note",
-                        tint = Color.Red
+                        tint = Color.Red,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onDelete() }
                     )
                 }
             }
