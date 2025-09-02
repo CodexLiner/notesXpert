@@ -27,6 +27,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.kotlinx.datetime)
 
             implementation(compose.material3)
             implementation(compose.components.resources)

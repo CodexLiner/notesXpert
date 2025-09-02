@@ -1,5 +1,6 @@
 package me.meenagopal24.notesxpert.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,15 +26,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,18 +50,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 import me.meenagopal24.notesxpert.ui.components.NotesSearchBar
 import me.meenagopal24.notesxpert.ui.getRandomColor
+import me.meenagopal24.notesxpert.ui.showable
 import me.meenagopal24.notesxpert.ui.swipeToDelete
+import me.meenagopal24.notesxpert.ui.toLocalDateTime
 import me.meenagopal24.notexpert.models.Note
 import notesxpert.app.composeapp.generated.resources.Res
+import notesxpert.app.composeapp.generated.resources.ic_date
 import notesxpert.app.composeapp.generated.resources.ic_edit
 import notesxpert.app.composeapp.generated.resources.ic_plus
 import notesxpert.app.composeapp.generated.resources.ic_trash
 import org.jetbrains.compose.resources.painterResource
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,44 +136,51 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
 
         if (showBottomSheet) {
             AddNoteBottomSheet(
-                isEdit = editingNote != null,
-                newTitle = newTitle,
-                onTitleChange = { newTitle = it },
-                newBody = newBody,
-                onBodyChange = { newBody = it }, onSave = {
-                    if (newTitle.isNotBlank() || newBody.isNotBlank()) {
-                        editingNote?.let {
-                            viewModel.updateNote(it)
-                        } ?: viewModel.addNote(newTitle, newBody)
-                        newTitle = ""
-                        newBody = ""
-                        editingNote = null
-                        showBottomSheet = false
-                    }
-                },
-                onDismiss = {
+                note = editingNote,
+                onSave = { note ->
+                    editingNote?.let { viewModel.updateNote(it) } ?: viewModel.addNote(
+                        newTitle,
+                        newBody
+                    )
+                    newTitle = ""
+                    newBody = ""
+                    editingNote = null
+                    showBottomSheet = false
+                }, onDismiss = {
                     showBottomSheet = false
                     editingNote = null
-                }
-            )
+                })
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 private fun AddNoteBottomSheet(
-    newTitle: String,
-    onTitleChange: (String) -> Unit,
-    newBody: String,
-    onBodyChange: (String) -> Unit,
-    onSave: () -> Unit,
+    note: Note? = null,
+    onSave: (Note) -> Unit,
     onDismiss: () -> Unit,
-    isEdit: Boolean,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    var title by remember { mutableStateOf(note?.title.orEmpty()) }
+    var body by remember { mutableStateOf(note?.body.orEmpty()) }
+    var creationDate by remember { mutableStateOf(note?.createdAt ?: Clock.System.now().toEpochMilliseconds()) }
     var showTitleError by remember { mutableStateOf(false) }
     var showBodyError by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = creationDate)
+
+    val outlinedButtonColors = ButtonDefaults.outlinedButtonColors(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    val outlinedButtonBorder = ButtonDefaults.outlinedButtonBorder.copy(
+        brush = SolidColor(MaterialTheme.colorScheme.primary)
+    )
+    val roundedButtonShape = RoundedCornerShape(12.dp)
+    val buttonModifier = Modifier.fillMaxWidth().height(56.dp)
 
     ModalBottomSheet(
         sheetState = sheetState,
@@ -177,32 +196,68 @@ private fun AddNoteBottomSheet(
                 .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Add New Note", style = MaterialTheme.typography.headlineSmall)
+            Text(
+                text = if (note == null) "Add New Note" else "Edit Note",
+                style = MaterialTheme.typography.headlineSmall
+            )
 
-            NoteInputField(newTitle, onTitleChange, "Title", showTitleError, 56.dp) {
-                showTitleError = false
+            NoteInputField(title, { title = it }, "Title", showTitleError, 56.dp) { showTitleError = false }
+            NoteInputField(body, { body = it }, "Body", showBodyError, 180.dp) { showBodyError = false }
+
+            OutlinedButton(
+                onClick = { showDatePicker = true },
+                modifier = buttonModifier,
+                shape = roundedButtonShape,
+                colors = outlinedButtonColors,
+                border = outlinedButtonBorder
+            ) {
+                Image(painter = painterResource(Res.drawable.ic_date), contentDescription = "Select Date")
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text = datePickerState.selectedDateMillis
+                        ?.let { Instant.fromEpochMilliseconds(it).toLocalDateTime().showable() }
+                        ?: "Select Date",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
-            NoteInputField(newBody, onBodyChange, "Body", showBodyError, 180.dp) {
-                showBodyError = false
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    modifier = Modifier.padding(horizontal = 2.dp).fillMaxWidth(0.9f),
+                    shape = roundedButtonShape,
+                    tonalElevation = 8.dp,
+                    confirmButton = {
+                        TextButton(onClick = {
+                            datePickerState.selectedDateMillis?.let { creationDate = it }
+                            showDatePicker = false
+                        }) { Text("OK") }
+                    },
+                    dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
+                ) {
+                    DatePicker(showModeToggle = false, title = null, headline = null, state = datePickerState)
+                }
             }
 
             Button(
                 onClick = {
-                    val titleValid = newTitle.isNotBlank()
-                    val bodyValid = newBody.isNotBlank()
-                    showTitleError = !titleValid
-                    showBodyError = !bodyValid
-                    if (titleValid && bodyValid) onSave()
+                    val validTitle = title.isNotBlank()
+                    val validBody = body.isNotBlank()
+                    showTitleError = !validTitle
+                    showBodyError = !validBody
+
+                    if (validTitle && validBody) {
+                        onSave(Note(title = title, body = body, createdAt = creationDate, id = note?.id ?: 0))
+                    }
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(12.dp),
+                modifier = buttonModifier,
+                shape = roundedButtonShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.onBackground,
                     contentColor = MaterialTheme.colorScheme.background
                 )
             ) {
-                Text(text = if (isEdit) "Update" else "Save", style = MaterialTheme.typography.titleMedium)
+                Text(text = if (note == null) "Save" else "Update", style = MaterialTheme.typography.titleMedium)
             }
         }
     }
@@ -276,7 +331,7 @@ private fun NoteCard(
     note: Note,
     color: Color,
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
 ) {
     Card(
         modifier = modifier
