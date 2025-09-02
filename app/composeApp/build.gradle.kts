@@ -25,6 +25,13 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.ui)
             implementation(compose.foundation)
+            implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.androidx.lifecycle.viewmodel)
+
+            implementation(compose.material3)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+
             implementation(project(":core"))
         }
 
@@ -36,7 +43,7 @@ kotlin {
 }
 
 android {
-    namespace = "sample.app"
+    namespace = "me.app"
     compileSdk = 35
 
     defaultConfig {

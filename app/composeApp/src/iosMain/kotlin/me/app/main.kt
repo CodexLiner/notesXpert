@@ -1,5 +1,5 @@
 import androidx.compose.ui.window.ComposeUIViewController
 import platform.UIKit.UIViewController
-import sample.app.App
+import me.meenagopal24.notesxpert.ui.App
 
 fun MainViewController(): UIViewController = ComposeUIViewController { App() }
