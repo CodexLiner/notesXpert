@@ -10,17 +10,21 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import me.meenagopal24.notesxpert.ui.screens.NotesListScreen
-import me.meenagopal24.notexpert.models.Note
-import kotlin.time.Clock
+import androidx.navigation.compose.rememberNavController
+import me.meenagopal24.notesxpert.ui.navigation.NavigationHost
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
-    Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+    val navController = rememberNavController()
+
+    Box(
+        modifier = Modifier.fillMaxSize().background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
         CompositionLocalProvider(LocalRippleConfiguration provides null) {
-            NotesListScreen()
+            NavigationHost(navController)
         }
     }
 }

@@ -1,4 +1,4 @@
-package me.meenagopal24.notesxpert.ui.screens
+package me.meenagopal24.notesxpert.ui.screens.notes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -60,7 +60,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import me.meenagopal24.notesxpert.ui.asHtml
 import me.meenagopal24.notesxpert.ui.asLocalDateTime
-import me.meenagopal24.notesxpert.ui.components.HtmlContent
 import me.meenagopal24.notesxpert.ui.components.NotesSearchBar
 import me.meenagopal24.notesxpert.ui.getRandomColor
 import me.meenagopal24.notesxpert.ui.showable
@@ -78,7 +77,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
+fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() } , onNoteClick: (String) -> Unit) {
     val notes = viewModel.filteredNotes
     val searchQuery = viewModel.searchQuery
     val coroutineScope = rememberCoroutineScope()
@@ -120,6 +119,9 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() }) {
                         onEdit = {
                             editingNote = note
                             showBottomSheet = true
+                        },
+                        onCardClick = {
+                            onNoteClick(note.id.toString())
                         }
                     )
                 }
@@ -329,11 +331,12 @@ private fun NoteCard(
     color: Color,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
+    onCardClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .swipeToDelete(onDelete),
+            .swipeToDelete(onDelete).clickable { onCardClick() },
         colors = CardDefaults.cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium

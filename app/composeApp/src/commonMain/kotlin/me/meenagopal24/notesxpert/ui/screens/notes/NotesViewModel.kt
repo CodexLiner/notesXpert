@@ -1,4 +1,4 @@
-package me.meenagopal24.notesxpert.ui.screens
+package me.meenagopal24.notesxpert.ui.screens.notes
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import me.meenagopal24.notexpert.NotesXpert
 import me.meenagopal24.notexpert.models.Note
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 class NotesViewModel {
