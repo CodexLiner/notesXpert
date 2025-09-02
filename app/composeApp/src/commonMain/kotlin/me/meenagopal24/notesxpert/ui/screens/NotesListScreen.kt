@@ -30,6 +30,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -49,6 +50,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import me.meenagopal24.notesxpert.ui.asHtml
+import me.meenagopal24.notesxpert.ui.asLocalDateTime
 import me.meenagopal24.notesxpert.ui.components.NotesSearchBar
 import me.meenagopal24.notesxpert.ui.getRandomColor
 import me.meenagopal24.notesxpert.ui.showable
@@ -310,7 +313,7 @@ private fun NotesHeader(
         Text(
             "Notes",
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(12.dp))
         NotesSearchBar(query = mutableStateOf(searchQuery), onQueryChange = onQueryChange)
@@ -334,7 +337,7 @@ private fun NoteCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp) , verticalArrangement = Arrangement.Center) {
             Text(note.title, style = MaterialTheme.typography.titleMedium, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -344,8 +347,15 @@ private fun NoteCard(
                 overflow = TextOverflow.Ellipsis,
                 color = Color.Black.copy(alpha = 0.8f)
             )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp).alpha(0.5f))
             Box(modifier = Modifier.fillMaxWidth()) {
-                Row(modifier = Modifier.align(Alignment.BottomEnd)) {
+                Row(modifier = Modifier.align(Alignment.BottomEnd) , verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = note.createdAt.asLocalDateTime().showable(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
                     Icon(
                         painter = painterResource(Res.drawable.ic_edit),
                         contentDescription = "Edit Note",
@@ -368,4 +378,3 @@ private fun NoteCard(
         }
     }
 }
-

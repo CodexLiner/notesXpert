@@ -34,5 +34,8 @@ fun getRandomColor() = Color(
 fun Instant.toLocalDateTime(systemTimeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime {
     return toLocalDateTime(timeZone = systemTimeZone)
 }
+fun Long.asLocalDateTime(): LocalDateTime {
+   return Instant.fromEpochMilliseconds(this).toLocalDateTime()
 
+}
 fun LocalDateTime.showable() = "${this.dayOfMonth.toString().padStart(2, '0')} " + "${this.month.name.lowercase().replaceFirstChar { it.uppercase() }} " + "${this.year}"
