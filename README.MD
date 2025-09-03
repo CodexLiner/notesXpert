@@ -1,4 +1,4 @@
-# Project Name
+# NotesXpert 
 
 ## Project Structure
 
@@ -13,8 +13,8 @@ The project is organized into two main modules for a clean and maintainable arch
 ### Core Module (MVVM)
 - Implements the **MVVM architecture** with the following layers:
   - **Domain** – Business logic and use cases.
-  - **Data** – Local (SQLDelight) and remote data sources.
-  - **Repository** – Abstraction layer providing data to ViewModels.
+  - **Data** – Local (SQLDelight) to Store and Retrieve data.
+  - **Repository** – Responsible for fetching data from the data layer.
 - Provides a reusable, testable, and modular backbone for the app.  
   ![Core Structure](docs/core_structure.png)
 
