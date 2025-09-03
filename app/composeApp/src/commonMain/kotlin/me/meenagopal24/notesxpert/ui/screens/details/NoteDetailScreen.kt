@@ -42,15 +42,10 @@ fun NoteDetailScreen(
                 )
             }
         })
-        Box(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
-        ) {
-            HtmlContent(
-                html = note?.body.orEmpty(), onLinkClick = { message ->
-                    AppState.showToast(message)
-                }
-            )
-        }
+        HtmlContent(
+            html = note?.body.orEmpty(), onLinkClick = { message ->
+                AppState.showToast(message)
+            }
+        )
     }
 }
