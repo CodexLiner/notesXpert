@@ -1,8 +1,10 @@
 package me.meenagopal24.notexpert.domain
 
 import me.meenagopal24.notexpert.data.repository.NotesRepositoryImpl
+import me.meenagopal24.notexpert.models.Note
 
-class GetNotesUseCase() {
+class UpdateNoteUseCase {
     private val repo = NotesRepositoryImpl()
-    operator fun invoke()  = repo.getAllNotes()
+    suspend operator fun invoke(note: Note) = repo.updateNote(note)
+
 }

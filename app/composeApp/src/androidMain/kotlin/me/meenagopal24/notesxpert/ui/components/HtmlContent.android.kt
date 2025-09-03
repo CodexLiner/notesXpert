@@ -10,10 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import me.meenagopal24.notesxpert.ui.components.bridge.JavaScriptBridge
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -30,7 +35,8 @@ actual fun HtmlContent(html: String, onLinkClick: (String) -> Unit) {
                     settings.displayZoomControls = false
                     settings.textZoom = 100
                     settings.defaultTextEncodingName = "utf-8"
-
+                    settings.javaScriptCanOpenWindowsAutomatically = true
+                    addJavascriptInterface(JavaScriptBridge { msg -> onLinkClick(msg) }, "JavaScriptBridge")
                     webViewClient = object : WebViewClient() {
                         override fun shouldOverrideUrlLoading(
                             view: WebView,

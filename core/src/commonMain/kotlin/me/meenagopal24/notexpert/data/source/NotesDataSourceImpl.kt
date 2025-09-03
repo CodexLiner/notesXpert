@@ -10,8 +10,9 @@ internal class NotesDataSourceImpl : NotesDataSource {
 
     override fun insertNote(note: Notes) {
         queries.insertNote(
-            title = note.title, body = note.body, createdAt = note.createdAt
+            title = note.title, body = note.body, createdAt = note.createdAt, color = note.color
         )
+
     }
 
     override fun deleteNote(id: Long) {
@@ -20,5 +21,14 @@ internal class NotesDataSourceImpl : NotesDataSource {
 
     override fun getNoteById(id: Long) = queries.getById(id).executeAsOneOrNull()
 
-    override fun observeNotes() = queries.getAll().executeAsList()
+    override fun getAllNotes() = queries.getAll().executeAsList()
+    override fun updateNote(note: Notes) {
+        queries.updateNote(
+            id = note.id,
+            title = note.title,
+            body = note.body,
+            createdAt = note.createdAt,
+            color = note.color
+        )
+    }
 }

@@ -2,17 +2,26 @@ CREATE TABLE notes (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   body TEXT NOT NULL,
-  createdAt INTEGER NOT NULL -- epoch millis
+  createdAt INTEGER NOT NULL,
+  color INTEGER NOT NULL
 );
 
 getAll:
 SELECT * FROM notes ORDER BY createdAt DESC;
 
 insertNote:
-INSERT INTO notes(title, body, createdAt) VALUES (?, ?, ?);
+INSERT INTO notes(title, body, createdAt , color) VALUES (?, ?, ? , ?);
 
 deleteNote:
 DELETE FROM notes WHERE id = ?;
 
 getById:
 SELECT * FROM notes WHERE id = ?;
+
+updateNote:
+UPDATE notes
+SET title = ?,
+    body = ?,
+    createdAt = ?,
+    color = ?
+WHERE id = ?;

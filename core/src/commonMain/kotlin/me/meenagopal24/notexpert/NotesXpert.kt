@@ -13,4 +13,9 @@ object NotesXpert {
     val getNotesUseCase by lazy {
         me.meenagopal24.notexpert.domain.GetNotesUseCase()
     }
+
+    val updateNoteUseCase by lazy {
+        me.meenagopal24.notexpert.domain.UpdateNoteUseCase()
+    }
+
 }
