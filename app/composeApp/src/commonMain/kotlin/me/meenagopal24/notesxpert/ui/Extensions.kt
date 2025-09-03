@@ -1,26 +1,12 @@
 package me.meenagopal24.notesxpert.ui
 
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.AnnotatedString
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
-import androidx.compose.ui.text.AnnotatedString
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
-
-fun Modifier.swipeToDelete(onDismissed: () -> Unit) = composed {
-    pointerInput(Unit) {
-        detectHorizontalDragGestures { change, dragAmount ->
-            if (dragAmount > 200) {
-                onDismissed()
-            }
-        }
-    }
-}
 
 expect fun String.asHtml() : AnnotatedString
 

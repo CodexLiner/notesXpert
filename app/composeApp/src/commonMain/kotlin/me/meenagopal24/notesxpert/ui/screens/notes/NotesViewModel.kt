@@ -3,9 +3,10 @@ package me.meenagopal24.notesxpert.ui.screens.notes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.meenagopal24.notexpert.NotesXpert
@@ -17,18 +18,22 @@ class NotesViewModel {
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
 
     private val _notes = MutableStateFlow<List<Note>>(emptyList())
-    val notes: StateFlow<List<Note>> get() = _notes.asStateFlow()
+//    val notes: StateFlow<List<Note>> get() = _notes.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> get() = _searchQuery
 
-    val filteredNotes = _notes.combine(_searchQuery) { notes, query ->
+    val notes: StateFlow<List<Note>> = combine(_notes, _searchQuery) { notes, query ->
         if (query.isBlank()) notes
         else notes.filter { note ->
             note.title.contains(query, ignoreCase = true) ||
                     note.body.contains(query, ignoreCase = true)
         }
-    }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     fun loadNotes() {
         viewModelScope.launch {

@@ -64,7 +64,6 @@ import me.meenagopal24.notesxpert.ui.asLocalDateTime
 import me.meenagopal24.notesxpert.ui.components.NotesSearchBar
 import me.meenagopal24.notesxpert.ui.getRandomColor
 import me.meenagopal24.notesxpert.ui.showable
-import me.meenagopal24.notesxpert.ui.swipeToDelete
 import me.meenagopal24.notesxpert.ui.toLocalDateTime
 import me.meenagopal24.notexpert.models.Note
 import notesxpert.app.composeapp.generated.resources.Res
@@ -81,8 +80,8 @@ import kotlin.time.ExperimentalTime
 fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() } , onNoteClick: (String) -> Unit) {
     val notes by viewModel.notes.collectAsState()
 
-    when (notes.size) {
-        0 ->  DummyNotesScreen(viewModel)
+    when  {
+        notes.isEmpty() && viewModel.searchQuery.value.isEmpty() ->  DummyNotesScreen(viewModel)
         else -> NotesMainContent(notes, viewModel, onNoteClick)
     }
     LaunchedEffect(Unit) {
@@ -124,7 +123,7 @@ fun DummyNotesScreen(viewModel: NotesViewModel) {
 
 @Composable
 fun NotesMainContent(notes: List<Note>, viewModel: NotesViewModel, onNoteClick: (String) -> Unit) {
-    val searchQuery = viewModel.searchQuery
+    val searchQuery = viewModel.searchQuery.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
@@ -380,8 +379,7 @@ private fun NoteCard(
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .swipeToDelete(onDelete).clickable(indication = null , interactionSource = null , onClick = onCardClick),
+            .fillMaxWidth().clickable(indication = null , interactionSource = null , onClick = onCardClick),
         colors = CardDefaults.cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium
