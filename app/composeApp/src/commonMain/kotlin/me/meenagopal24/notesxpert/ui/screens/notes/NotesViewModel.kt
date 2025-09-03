@@ -18,17 +18,17 @@ class NotesViewModel {
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
 
     private val _notes = MutableStateFlow<List<Note>>(emptyList())
-//    val notes: StateFlow<List<Note>> get() = _notes.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> get() = _searchQuery
 
     val notes: StateFlow<List<Note>> = combine(_notes, _searchQuery) { notes, query ->
-        if (query.isBlank()) notes
+        if (query.isBlank()) notes.sortedBy { it.id }
         else notes.filter { note ->
             note.title.contains(query, ignoreCase = true) ||
                     note.body.contains(query, ignoreCase = true)
-        }
+        }.sortedBy { it.id }
+
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -62,9 +62,8 @@ class NotesViewModel {
 
     fun updateNote(note: Note) {
         viewModelScope.launch {
-            _notes.update { currentNotes ->
-                currentNotes.map { if (it.id == note.id) note else it }
-            }
+            NotesXpert.updateNoteUseCase(note)
+           loadNotes()
         }
     }
 

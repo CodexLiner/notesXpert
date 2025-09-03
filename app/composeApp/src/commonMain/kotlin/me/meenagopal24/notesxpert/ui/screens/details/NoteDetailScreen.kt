@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
-import co.touchlab.kermit.Logger
+import me.meenagopal24.notesxpert.ui.AppState
 import me.meenagopal24.notesxpert.ui.components.HtmlContent
 import me.meenagopal24.notexpert.models.Note
 import notesxpert.app.composeapp.generated.resources.Res
@@ -47,8 +47,8 @@ fun NoteDetailScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             HtmlContent(
-                html = note?.body ?: "Hello Note Xpert", onLinkClick = { url ->
-                    Logger.d("NoteDetail, Link clicked: $url")
+                html = note?.body.orEmpty(), onLinkClick = { message ->
+                    AppState.showToast(message)
                 }
             )
         }

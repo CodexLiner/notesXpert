@@ -17,6 +17,10 @@ fun getRandomColor() = Color(
     Random.nextInt(200, 256)
 )
 
+fun Long.toColor() = if (this == 0L) getRandomColor() else Color(this.toULong())
+
+fun Color.toLong() = value.toLong() and 0xFFFFFFFFFFFFFFFFuL.toLong()
+
 fun Instant.toLocalDateTime(systemTimeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime {
     return toLocalDateTime(timeZone = systemTimeZone)
 }

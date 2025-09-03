@@ -64,7 +64,9 @@ import me.meenagopal24.notesxpert.ui.asLocalDateTime
 import me.meenagopal24.notesxpert.ui.components.NotesSearchBar
 import me.meenagopal24.notesxpert.ui.getRandomColor
 import me.meenagopal24.notesxpert.ui.showable
+import me.meenagopal24.notesxpert.ui.toColor
 import me.meenagopal24.notesxpert.ui.toLocalDateTime
+import me.meenagopal24.notesxpert.ui.toLong
 import me.meenagopal24.notexpert.models.Note
 import notesxpert.app.composeapp.generated.resources.Res
 import notesxpert.app.composeapp.generated.resources.ic_date
@@ -149,7 +151,7 @@ fun NotesMainContent(notes: List<Note>, viewModel: NotesViewModel, onNoteClick: 
 
             items(notes, key = { it.id }) { note ->
                 var dismissed by remember { mutableStateOf(false) }
-                val noteColor = remember { getRandomColor() }
+                val noteColor = remember { note.color?.toColor() ?: getRandomColor() }
 
                 if (!dismissed) {
                     NoteCard(
@@ -186,7 +188,7 @@ fun NotesMainContent(notes: List<Note>, viewModel: NotesViewModel, onNoteClick: 
             AddNoteBottomSheet(
                 note = editingNote,
                 onSave = { note ->
-                    editingNote?.let { viewModel.updateNote(it) } ?: viewModel.addNote(note)
+                    editingNote?.let { viewModel.updateNote(note) } ?: viewModel.addNote(note)
                     editingNote = null
                     showBottomSheet = false
                 }, onDismiss = {
@@ -289,9 +291,16 @@ private fun AddNoteBottomSheet(
                     showTitleError = !validTitle
                     showBodyError = !validBody
 
-                    if (validTitle && validBody) {
-                        onSave(Note(title = title, body = body, createdAt = creationDate, id = note?.id ?: 0))
-                    }
+                    if (validTitle && validBody) onSave(
+                        Note(
+                            title = title,
+                            body = body,
+                            createdAt = creationDate,
+                            id = note?.id ?: 0,
+                            color = note?.color ?: getRandomColor().toLong()
+                        )
+                    )
+
                 },
                 modifier = buttonModifier,
                 shape = roundedButtonShape,
@@ -305,6 +314,7 @@ private fun AddNoteBottomSheet(
         }
     }
 }
+
 
 @Composable
 private fun NoteInputField(
