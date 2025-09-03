@@ -1,12 +1,9 @@
-package me.meenagopal24.notesxpert.ui.screens.details
+package me.meenagopal24.notesxpert.ui.screens.pdfviewer
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -17,22 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
-import me.meenagopal24.notesxpert.ui.AppState
-import me.meenagopal24.notesxpert.ui.components.html.HtmlContent
-import me.meenagopal24.notexpert.models.Note
+import me.meenagopal24.notesxpert.ui.components.webview.WebView
 import notesxpert.app.composeapp.generated.resources.Res
 import notesxpert.app.composeapp.generated.resources.ic_back
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteDetailScreen(
-    note: Note?,
-    navController: NavHostController,
-) {
+fun PdfViewScreen(navController: NavHostController, url: String, title: String) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = {
-            Text(text = note?.title.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }, navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Image(
@@ -41,16 +33,12 @@ fun NoteDetailScreen(
                     contentDescription = "Back"
                 )
             }
-        })
-        Box(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
-        ) {
-            HtmlContent(
-                html = note?.body.orEmpty(), onLinkClick = { message ->
-                    AppState.showToast(message)
-                }
-            )
+        }
+        )
+        Box(modifier = Modifier.weight(1f)) {
+            val webUrl =
+                if (url.startsWith("https://drive.google.com")) url else "https://drive.google.com/viewerng/viewer?embedded=true&url=$url"
+            WebView(webUrl)
         }
     }
 }

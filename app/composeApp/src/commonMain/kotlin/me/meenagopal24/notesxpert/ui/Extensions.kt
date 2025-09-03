@@ -10,7 +10,6 @@ import kotlin.random.Random
 
 expect fun String.asHtml() : AnnotatedString
 
-
 fun getRandomColor() = Color(
     Random.nextInt(200, 256),
     Random.nextInt(200, 256),

@@ -1,4 +1,4 @@
-package me.meenagopal24.notesxpert.ui.components
+package me.meenagopal24.notesxpert.ui.components.html
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

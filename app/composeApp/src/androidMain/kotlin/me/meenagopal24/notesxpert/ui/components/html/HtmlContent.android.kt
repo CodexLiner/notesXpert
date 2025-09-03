@@ -1,4 +1,4 @@
-package me.meenagopal24.notesxpert.ui.components
+package me.meenagopal24.notesxpert.ui.components.html
 
 import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import me.meenagopal24.notesxpert.ui.components.bridge.JavaScriptBridge
+import me.meenagopal24.notesxpert.ui.components.html.bridge.JavaScriptBridge
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
