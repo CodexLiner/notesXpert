@@ -2,6 +2,9 @@ package me.meenagopal24.notesxpert.ui.components.webview
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.util.Log
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
@@ -9,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -30,7 +32,10 @@ actual fun WebView(url: String) {
     var isLoading by remember { mutableStateOf(true) }
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
-            modifier = Modifier.fillMaxSize().background(Color.White).navigationBarsPadding(), factory = { ctx ->
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .navigationBarsPadding(), factory = { ctx ->
                 WebView(ctx).apply {
                     setBackgroundColor(android.graphics.Color.WHITE)
                     settings.javaScriptEnabled = true
@@ -45,6 +50,15 @@ actual fun WebView(url: String) {
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
+                        }
+
+                        override fun onReceivedError(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                            error: WebResourceError?
+                        ) {
+                            super.onReceivedError(view, request, error)
+                            Log.e("TAG", "onReceivedError: ${error?.description}", )
                         }
                     }
 
