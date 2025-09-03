@@ -47,14 +47,14 @@ kotlin {
 }
 
 android {
-    namespace = "me.app"
+    namespace = "me.meenagopal24.NotesXpert"
     compileSdk = 35
 
     defaultConfig {
         minSdk = 21
         targetSdk = 35
 
-        applicationId = "sample.app.androidApp"
+        applicationId = "me.meenagopal24.NotesXpert"
         versionCode = 1
         versionName = "1.0.0"
     }
