@@ -1,21 +1,25 @@
 package me.meenagopal24.notexpert
 
+import me.meenagopal24.notexpert.domain.*
+
 object NotesXpert {
     val addNoteUseCase by lazy {
-        me.meenagopal24.notexpert.domain.AddNoteUseCase()
+        AddNoteUseCase()
     }
     val deleteNoteUseCase by lazy {
-        me.meenagopal24.notexpert.domain.DeleteNoteUseCase()
+        DeleteNoteUseCase()
     }
     val getNoteByIdUseCase by lazy {
-        me.meenagopal24.notexpert.domain.GetNoteByIdUseCase()
+        GetNoteByIdUseCase()
     }
     val getNotesUseCase by lazy {
-        me.meenagopal24.notexpert.domain.GetNotesUseCase()
+        GetNotesUseCase()
     }
 
     val updateNoteUseCase by lazy {
-        me.meenagopal24.notexpert.domain.UpdateNoteUseCase()
+        UpdateNoteUseCase()
     }
-
+    val deleteAllNotesUseCase by lazy {
+        DeleteAllNotesUseCase()
+    }
 }

@@ -9,4 +9,5 @@ internal interface NotesRepository {
     fun getAllNotes(): List<Note>
 
     fun updateNote(note: Note)
+    fun deleteAllNotes()
 }

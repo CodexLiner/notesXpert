@@ -28,10 +28,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -71,6 +74,7 @@ import me.meenagopal24.notexpert.models.Note
 import notesxpert.app.composeapp.generated.resources.Res
 import notesxpert.app.composeapp.generated.resources.ic_date
 import notesxpert.app.composeapp.generated.resources.ic_edit
+import notesxpert.app.composeapp.generated.resources.ic_more
 import notesxpert.app.composeapp.generated.resources.ic_plus
 import notesxpert.app.composeapp.generated.resources.ic_trash
 import org.jetbrains.compose.resources.painterResource
@@ -145,7 +149,8 @@ fun NotesMainContent(notes: List<Note>, viewModel: NotesViewModel, onNoteClick: 
                 NotesHeader(
                     statusBarHeight = statusBarHeight,
                     searchQuery = searchQuery.value,
-                    onQueryChange = viewModel::updateSearchQuery
+                    onQueryChange = viewModel::updateSearchQuery,
+                    onDeleteAllNotes = viewModel::deleteAllNotes
                 )
             }
 
@@ -365,13 +370,50 @@ private fun NotesHeader(
     statusBarHeight: Dp,
     searchQuery: String,
     onQueryChange: (String) -> Unit,
+    onDeleteAllNotes: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(top = statusBarHeight, bottom = 16.dp)) {
-        Text(
-            "Notes",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = statusBarHeight, bottom = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Notes",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_more),
+                        contentDescription = "Menu"
+                    )
+                }
+
+                DropdownMenu(
+                    modifier = Modifier.padding(0.dp),
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Delete All Notes") },
+                        onClick = {
+                            expanded = false
+                            onDeleteAllNotes()
+                        }
+                    )
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
         NotesSearchBar(query = mutableStateOf(searchQuery), onQueryChange = onQueryChange)
     }

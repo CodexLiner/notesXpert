@@ -8,4 +8,5 @@ internal interface NotesDataSource {
     fun getNoteById(id: Long): Notes?
     fun getAllNotes(): List<Notes>
     fun updateNote(note: Notes)
+    fun deleteAllNotes()
 }

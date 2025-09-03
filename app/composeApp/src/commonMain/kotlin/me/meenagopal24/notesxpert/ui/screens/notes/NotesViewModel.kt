@@ -67,6 +67,13 @@ class NotesViewModel {
         }
     }
 
+    fun deleteAllNotes() {
+        viewModelScope.launch {
+            _notes.value = emptyList()
+            NotesXpert.deleteAllNotesUseCase()
+        }
+    }
+
     fun addDummyNotes() {
         viewModelScope.launch {
             me.meenagopal24.notesxpert.dummy.notes.forEach {

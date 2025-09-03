@@ -31,4 +31,8 @@ internal class NotesDataSourceImpl : NotesDataSource {
             color = note.color
         )
     }
+
+    override fun deleteAllNotes() {
+        queries.deleteAll()
+    }
 }

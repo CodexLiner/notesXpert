@@ -18,5 +18,8 @@ class NotesRepositoryImpl : NotesRepository {
         Note(id = it.id, title = it.title, body = it.body, createdAt = it.createdAt , color = it.color)
     }
     override fun updateNote(note: Note) = dataSource.updateNote(me.meenagopal24.notesxpert.db.Notes(id = note.id, title = note.title, body = note.body, createdAt = note.createdAt , color = note.color ?: 0))
+    override fun deleteAllNotes() {
+        dataSource.deleteAllNotes()
+    }
 
 }
