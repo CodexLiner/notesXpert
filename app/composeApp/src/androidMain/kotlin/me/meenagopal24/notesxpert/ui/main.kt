@@ -1,10 +1,9 @@
-package me.app
+package me.meenagopal24.notesxpert.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import me.meenagopal24.notesxpert.ui.App
 
 class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
