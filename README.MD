@@ -65,30 +65,14 @@ class JavaScriptBridge(
 
 * The `postMessage` method is called from JavaScript inside the HTML or PDF content.
 * `onLinkClick(msg)` is a callback in your app to handle the link click or any action triggered from the web content.
-
 ## Screen Recording / App Walkthrough
 
 The app walkthrough videos demonstrate the UI and functionality on iOS and Android.
 
-<div style="display: flex; gap: 20px; flex-wrap: wrap;">
-
-<div style="text-align: center; width: 45%;">
-  <video width="100%" controls autoplay muted loop>
-    <source src="docs/ios.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <p>iOS Device</p>
-</div>
-
-<div style="text-align: center; width: 45%;">
-  <video width="100%" controls autoplay muted loop>
-    <source src="docs/android.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <p>Android Device</p>
-</div>
-
-</div>
+| iOS Device | Android Device |
+|------------|----------------|
+| ![iOS Walkthrough](docs/ios.gif) | ![Android Walkthrough](docs/android.gif) |
+| [Watch iOS Video](docs/ios.mp4) | [Watch Android Video](docs/android.mp4) |
 
 ### Download APK
 
