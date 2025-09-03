@@ -7,6 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -15,67 +17,98 @@ import me.meenagopal24.notesxpert.ui.navigation.Screens
 
 @Composable
 fun HomeScreen(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+    Box(
+        modifier = Modifier.fillMaxSize().background(
+            Brush.verticalGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                    MaterialTheme.colorScheme.background
+                )
+            )
+        ).padding(24.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 32.dp),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // App Title
-            Text(
-                text = "NotesXpert",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Open PDF Viewer Button
-            Button(
-                onClick = { navController.navigate(Screens.PdfListScreen.route) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "Open PDF Viewer",
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    text = "NotesXpert",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Your smart hub for notes & PDFs",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Open Notes Button
-            Button(
-                onClick = { navController.navigate(Screens.NotesListScreen.route) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
+                FeatureCard(
+                    title = "Open PDF Viewer",
+                    description = "Access & manage all your PDFs",
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                    onClick = { navController.navigate(Screens.PdfListScreen.route) })
+                FeatureCard(
+                    title = "Open Notes",
+                    description = "Create & organize your notes",
+                    backgroundColor = MaterialTheme.colorScheme.secondary,
+                    onClick = { navController.navigate(Screens.NotesListScreen.route) })
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "Made with ❤️ by Gopal Meena",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
+        }
+    }
+}
+
+@Composable
+fun FeatureCard(
+    title: String,
+    description: String,
+    backgroundColor: androidx.compose.ui.graphics.Color,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth().shadow(4.dp, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Column {
                 Text(
-                    text = "Open Notes",
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    text = title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Light,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = description,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                 )
             }
         }
