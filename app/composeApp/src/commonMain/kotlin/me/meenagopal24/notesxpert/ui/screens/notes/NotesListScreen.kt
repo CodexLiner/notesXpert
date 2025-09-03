@@ -458,7 +458,7 @@ private fun NoteCard(
                     Icon(
                         painter = painterResource(Res.drawable.ic_edit),
                         contentDescription = "Edit Note",
-                        tint = Color.Blue,
+                        tint = Color.Black,
                         modifier = Modifier
                             .size(24.dp)
                             .clickable { onEdit() }
