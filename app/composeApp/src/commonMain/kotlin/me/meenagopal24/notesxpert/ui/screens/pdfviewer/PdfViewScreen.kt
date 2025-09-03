@@ -37,7 +37,7 @@ fun PdfViewScreen(navController: NavHostController, url: String, title: String) 
         )
         Box(modifier = Modifier.weight(1f)) {
             val webUrl =
-                if (url.startsWith("https://drive.google.com")) url else "https://drive.google.com/viewerng/viewer?embedded=true&url=$url"
+                if (url.startsWith("https://drive.google.com")) url else "https://drive.google.com/viewerng/viewer?embedded=false&url=$url"
             WebView(webUrl)
         }
     }
