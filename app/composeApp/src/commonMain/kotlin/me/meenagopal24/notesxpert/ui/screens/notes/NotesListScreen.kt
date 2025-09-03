@@ -88,8 +88,8 @@ fun NotesListScreen(viewModel: NotesViewModel = remember { NotesViewModel() } , 
 
     when  {
         notes.isEmpty() && viewModel.searchQuery.value.isEmpty() ->  DummyNotesScreen(viewModel)
-        else -> NotesMainContent(notes, viewModel, onNoteClick)
     }
+    NotesMainContent(notes, viewModel, onNoteClick)
     LaunchedEffect(Unit) {
         viewModel.loadNotes()
     }
@@ -140,41 +140,42 @@ fun NotesMainContent(notes: List<Note>, viewModel: NotesViewModel, onNoteClick: 
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 200.dp)
-        ) {
-            item {
-                NotesHeader(
-                    statusBarHeight = statusBarHeight,
-                    searchQuery = searchQuery.value,
-                    onQueryChange = viewModel::updateSearchQuery,
-                    onDeleteAllNotes = viewModel::deleteAllNotes
-                )
-            }
-
-            items(notes, key = { it.id }) { note ->
-                var dismissed by remember { mutableStateOf(false) }
-                val noteColor = remember { note.color?.toColor() ?: getRandomColor() }
-
-                if (!dismissed) {
-                    NoteCard(
-                        modifier = Modifier.animateItem(),
-                        note = note,
-                        color = noteColor,
-                        onDelete = {
-                            dismissed = true
-                            coroutineScope.launch { viewModel.deleteNote(note) }
-                        },
-                        onEdit = {
-                            editingNote = note
-                            showBottomSheet = true
-                        },
-                        onCardClick = {
-                            onNoteClick(note.id.toString())
-                        }
+        notes.takeIf { it.isNotEmpty() }?.let {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 200.dp)
+            ) {
+                item {
+                    NotesHeader(
+                        statusBarHeight = statusBarHeight,
+                        searchQuery = searchQuery.value,
+                        onQueryChange = viewModel::updateSearchQuery,
+                        onDeleteAllNotes = viewModel::deleteAllNotes
                     )
+                }
+                items(notes, key = { it.id }) { note ->
+                    var dismissed by remember { mutableStateOf(false) }
+                    val noteColor = remember { note.color?.toColor() ?: getRandomColor() }
+
+                    if (!dismissed) {
+                        NoteCard(
+                            modifier = Modifier.animateItem(),
+                            note = note,
+                            color = noteColor,
+                            onDelete = {
+                                dismissed = true
+                                coroutineScope.launch { viewModel.deleteNote(note) }
+                            },
+                            onEdit = {
+                                editingNote = note
+                                showBottomSheet = true
+                            },
+                            onCardClick = {
+                                onNoteClick(note.id.toString())
+                            }
+                        )
+                    }
                 }
             }
         }
