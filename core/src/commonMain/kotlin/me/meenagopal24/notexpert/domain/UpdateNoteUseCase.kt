@@ -5,6 +5,6 @@ import me.meenagopal24.notexpert.models.Note
 
 class UpdateNoteUseCase {
     private val repo = NotesRepositoryImpl()
-    suspend operator fun invoke(note: Note) = repo.updateNote(note)
+    operator fun invoke(note: Note) = repo.updateNote(note)
 
 }

@@ -3,7 +3,7 @@ package me.meenagopal24.notexpert.data.repository
 import me.meenagopal24.notexpert.data.source.NotesDataSourceImpl
 import me.meenagopal24.notexpert.models.Note
 
-class NotesRepositoryImpl : NotesRepository {
+internal class NotesRepositoryImpl : NotesRepository {
     private val dataSource = NotesDataSourceImpl()
 
     override fun addNote(note: Note) = dataSource.insertNote(me.meenagopal24.notesxpert.db.Notes(id = note.id, title = note.title, body = note.body, createdAt = note.createdAt , color = note.color ?: 0))
